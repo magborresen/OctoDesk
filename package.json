@@ -1,0 +1,14 @@
+{
+  "name": "octodesk",
+  "version": "1.0.0",
+  "description": "OctoPrint support for OS menu bars",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Magnus Borresen",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^3.0.5"
+  }
+}
