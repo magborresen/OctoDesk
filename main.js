@@ -33,6 +33,11 @@ app.on('ready', () => {
   // Load HTML into popup window
   window.loadURL(`file://${path.join(__dirname, 'index.html')}`)
 
+  window.on('blur', () => {
+    if(!window.webContents.isDevToolsOpened()) {
+      window.hide()
+    }
+  })
 })
 
 const toggleWindow = () => {
@@ -45,7 +50,9 @@ const toggleWindow = () => {
 }
 
 const showWindow = () => {
+  // Get's the trays current position
   const trayPos = tray.getBounds()
+  // Get's the windows current position
   const windowPos = window.getBounds()
   let x, y = 0
   if (process.platform == 'darwin') {
@@ -54,9 +61,24 @@ const showWindow = () => {
   }
   else {
     x = Math.round(trayPos.x + (trayPos.width / 2) - (windowPos.width / 2))
-    y = Math.round(trayPos.y + trayPos.height * 10))
+    y = Math.round(trayPos.y + trayPos.height * 10)
   }
+
+  window.setPosition(x, y, false)
+  window.show()
+  window.focus()
 }
+
+ipcMain.on('show-window', () => {
+  showWindow()
+})
+
+app.on('window-all-closed', () => {
+  // Keep the app running on MacOS until Cmd + Q is pressed
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
 
 
 
