@@ -33,12 +33,30 @@ app.on('ready', () => {
   // Load HTML into popup window
   window.loadURL(`file://${path.join(__dirname, 'index.html')}`)
 
-  
-
 })
 
+const toggleWindow = () => {
+  if (window.isVisible) {
+    window.hide()
+  }
+  else {
+    showWindow()
+  }
+}
 
-
+const showWindow = () => {
+  const trayPos = tray.getBounds()
+  const windowPos = window.getBounds()
+  let x, y = 0
+  if (process.platform == 'darwin') {
+    x = Math.round(trayPos.x + (trayPos.width / 2) - (windowPos.width / 2))
+    y = Math.round(trayPos.y + trayPos.height)
+  }
+  else {
+    x = Math.round(trayPos.x + (trayPos.width / 2) - (windowPos.width / 2))
+    y = Math.round(trayPos.y + trayPos.height * 10))
+  }
+}
 
 
 
