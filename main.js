@@ -1,47 +1,38 @@
-const {app, BrowserWindow, ipcMain, Tray, nativeImage} = require('electron')
+const {app, BrowserWindow, ipcMain, Tray, nativeImage, Menu} = require('electron')
 const path = require('path')
 
 const assetsDir = path.join(__dirname, 'assets')
 
-let tray
-let window
+let tray = null
+let window = null
 
 app.on('ready', () => {
-  // Setup menubar with icon
+  // Get's the icon from the path
   let icon = nativeImage.createFromDataURL(base64Icon)
+  // Starts a new tray based on the icon
   tray = new Tray(icon)
 
-  // Add click event to show the window on user click
-  tray.on('click', function(event){
+  // When the tray icon is clicked the window will show
+  tray.on('click', function(event) {
     toggleWindow()
-
-    // Show the dev tools when command is clicked
-    if (window.isVisible() && process.defaultApp && event.metaKey) {
-      window.openDevTools({mode: 'detach'})
-    }
   })
 
-  // Create the window for the popup menu
+  // Defining the new browser window with parameters
   window = new BrowserWindow({
-    width: 600,
-    height: 400,
+    width: 500,
+    height: 380,
     show: false,
     frame: false,
     resizable: false,
   })
+  // Load the webcam url from OctoPrint
+  window.loadURL('http://octopi.local/webcam/?action=stream')
 
-  // Load HTML into popup window
-  window.loadURL(`file://${path.join(__dirname, 'index.html')}`)
-
-  window.on('blur', () => {
-    if(!window.webContents.isDevToolsOpened()) {
-      window.hide()
-    }
-  })
 })
 
-const toggleWindow = () => {
-  if (window.isVisible) {
+// Hides the window if visible and vice versa
+function toggleWindow() {
+  if (window.isVisible()) {
     window.hide()
   }
   else {
@@ -49,37 +40,10 @@ const toggleWindow = () => {
   }
 }
 
-const showWindow = () => {
-  // Get's the trays current position
-  const trayPos = tray.getBounds()
-  // Get's the windows current position
-  const windowPos = window.getBounds()
-  let x, y = 0
-  if (process.platform == 'darwin') {
-    x = Math.round(trayPos.x + (trayPos.width / 2) - (windowPos.width / 2))
-    y = Math.round(trayPos.y + trayPos.height)
-  }
-  else {
-    x = Math.round(trayPos.x + (trayPos.width / 2) - (windowPos.width / 2))
-    y = Math.round(trayPos.y + trayPos.height * 10)
-  }
-
-  window.setPosition(x, y, false)
+// Restraining and showing the window
+function showWindow() {
   window.show()
-  window.focus()
 }
-
-ipcMain.on('show-window', () => {
-  showWindow()
-})
-
-app.on('window-all-closed', () => {
-  // Keep the app running on MacOS until Cmd + Q is pressed
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
 
 
 let base64Icon = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw
