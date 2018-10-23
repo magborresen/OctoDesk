@@ -1,3 +1,4 @@
+const electron = require('electron')
 const {app, BrowserWindow, ipcMain, Tray, nativeImage, Menu} = require('electron')
 const path = require('path')
 
@@ -6,7 +7,15 @@ const assetsDir = path.join(__dirname, 'assets')
 let tray = null
 let window = null
 
+const TRAY_ARROW_HEIGHT = 50;
+const WINDOW_WIDTH = 500;
+const WINDOW_HEIGHT = 380;
+const HORIZ_PADDING = 15;
+const VERT_PADDING = 15;
+
 app.on('ready', () => {
+
+  app.dock.hide()
   // Get's the icon from the path
   let icon = nativeImage.createFromDataURL(base64Icon)
   // Starts a new tray based on the icon
@@ -19,14 +28,19 @@ app.on('ready', () => {
 
   // Defining the new browser window with parameters
   window = new BrowserWindow({
-    width: 500,
-    height: 380,
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
     show: false,
     frame: false,
     resizable: false,
+    movable: false,
   })
+
   // Load the webcam url from OctoPrint
   window.loadURL('http://octopi.local/webcam/?action=stream')
+
+  // Sets the text that's showed when mouse is hovered over the tray icon
+  tray.setToolTip('Toggle OctoDesk')
 
 })
 
@@ -42,7 +56,29 @@ function toggleWindow() {
 
 // Restraining and showing the window
 function showWindow() {
-  window.show()
+   var screen = electron.screen
+   const cursorPosition = screen.getCursorScreenPoint()
+   const primarySize = screen.getPrimaryDisplay().workAreaSize
+   const trayPositionVert = cursorPosition.y >= primarySize.height/2 ? 'bottom' : 'top'
+   const trayPositionHoriz = cursorPosition.x >= primarySize.width/2 ? 'right' : 'left'
+   window.setPosition(getTrayPosX(),  getTrayPosY())
+   window.isVisible() ? window.hide() : window.show()
+
+   function getTrayPosX() {
+     const horizBounds = {
+       left:   cursorPosition.x - WINDOW_WIDTH/2,
+       right:  cursorPosition.x + WINDOW_WIDTH/2
+     }
+     if (trayPositionHoriz == 'left') {
+       return horizBounds.left <= HORIZ_PADDING ? HORIZ_PADDING : horizBounds.left
+     }
+     else {
+       return horizBounds.right >= primarySize.width ? primarySize.width - HORIZ_PADDING - WINDOW_WIDTH: horizBounds.right - WINDOW_WIDTH
+     }
+   }
+   function getTrayPosY() {
+     return trayPositionVert == 'bottom' ? cursorPosition.y - WINDOW_HEIGHT - VERT_PADDING : cursorPosition.y + VERT_PADDING
+   }
 }
 
 
