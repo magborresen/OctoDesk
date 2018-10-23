@@ -1,6 +1,7 @@
 const electron = require('electron')
 const {app, BrowserWindow, ipcMain, Tray, nativeImage, Menu} = require('electron')
 const path = require('path')
+const fs = require('fs')
 
 const assetsDir = path.join(__dirname, 'assets')
 
@@ -15,7 +16,9 @@ const VERT_PADDING = 15;
 
 app.on('ready', () => {
 
+  if (process.platform == 'darwin') {
   app.dock.hide()
+  }
   // Get's the icon from the path
   let icon = nativeImage.createFromDataURL(base64Icon)
   // Starts a new tray based on the icon
@@ -36,9 +39,6 @@ app.on('ready', () => {
     movable: false,
   })
 
-  // Load the webcam url from OctoPrint
-  window.loadURL('http://octopi.local/webcam/?action=stream')
-
   // Sets the text that's showed when mouse is hovered over the tray icon
   tray.setToolTip('Toggle OctoDesk')
 
@@ -50,12 +50,19 @@ function toggleWindow() {
     window.hide()
   }
   else {
-    showWindow()
+    if (fs.exists(path.join(__dirname, 'Token.txt'))){
+      createWindow()
+      showAppWindow()
+    }
+    else {
+      createWindow()
+      showRegisterWindow()
+    }
   }
 }
 
 // Restraining and showing the window
-function showWindow() {
+function createWindow() {
    var screen = electron.screen
    const cursorPosition = screen.getCursorScreenPoint()
    const primarySize = screen.getPrimaryDisplay().workAreaSize
@@ -81,6 +88,15 @@ function showWindow() {
    }
 }
 
+function showAppWindow() {
+  // Load the webcam url from OctoPrint
+  window.loadURL('http://octopi.local/webcam/?action=stream')
+}
+
+function showRegisterWindow() {
+  // Load the register template
+  window.loadURL(path.join(__dirname, 'assets/html/register.html'))
+}
 
 let base64Icon = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw
 7AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkZCg87wZW7ewA
