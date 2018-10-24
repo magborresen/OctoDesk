@@ -51,10 +51,12 @@ function toggleWindow() {
     window.hide()
   }
   else {
-    if (fs.exists(path.join(__dirname, 'Token.txt'))){
+    // Check if API file exists.
+    if (fs.existsSync(path.join(__dirname, 'Token.txt'))) {
       createWindow()
       showAppWindow()
     }
+    // If not. Open register Window
     else {
       createWindow()
       showRegisterWindow()
@@ -62,7 +64,7 @@ function toggleWindow() {
   }
 }
 
-// Restraining and showing the window
+// Restraining the window
 function createWindow() {
    var screen = electron.screen
    const cursorPosition = screen.getCursorScreenPoint()
