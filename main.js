@@ -7,6 +7,7 @@ const assetsDir = path.join(__dirname, 'assets')
 
 let tray = null
 let window = null
+const ipAddress = "192.168.87.197"
 
 const TRAY_ARROW_HEIGHT = 50;
 const WINDOW_WIDTH = 500;
@@ -90,7 +91,7 @@ function createWindow() {
 
 function showAppWindow() {
   // Load the webcam url from OctoPrint
-  window.loadURL('http://octopi.local/webcam/?action=stream')
+  window.loadURL('http://' + ipAddress + '/webcam/?action=stream')
 }
 
 function showRegisterWindow() {
