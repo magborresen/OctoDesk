@@ -3,9 +3,14 @@
   <head>
     <meta charset="utf-8">
     <title>Register New User</title>
+    <link rel="stylesheet" href="/css/register.css">
   </head>
   <body>
-    <input type="text" name="" value="" placeholder="Please enter your API key to continue...">
-    <button type="submit" name="button">Submit</button>
+    <input type="text" id="ipInput" placeholder="Please enter your OctoPrint IP address...">
+    <input type="text" id="apiInput" placeholder="Please enter your API key...">
+    <button type="submit" name="button" id="apiSubmit">Submit</button>
   </body>
+  <script>
+    require('../js/register.js')
+  </script>
 </html>
