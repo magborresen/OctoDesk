@@ -101,6 +101,14 @@ function showRegisterWindow() {
   window.loadURL(path.join(__dirname, 'assets/html/register.html'))
 }
 
+// **********Ipc's********* //
+
+ipc.on('submit-api-file', function(event, arg) {
+  
+})
+
+// *********Ipc's end********* //
+
 let base64Icon = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw
 7AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkZCg87wZW7ewA
 AAp1JREFUOMuV1U2IVlUcx/HPnbc0MWwEF40hRWRQmWhEUi4KorlTQ0zQKgqSxKinRYuWrdq0iIp8DAy
