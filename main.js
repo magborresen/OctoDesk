@@ -52,7 +52,7 @@ function toggleWindow() {
   }
   else {
     // Check if API file exists.
-    if (fs.existsSync(path.join(__dirname, 'Token.txt'))) {
+    if (fs.existsSync(path.join(__dirname, 'user-info.txt'))) {
       createWindow()
       showAppWindow()
     }
@@ -103,8 +103,17 @@ function showRegisterWindow() {
 
 // **********Ipc's********* //
 
-ipc.on('submit-api-file', function(event, arg) {
-  
+ipcMain.on('submit-api-file', function(event, arg, arg2) {
+  fs.open('user-info.txt', 'w', function(err, file){
+    if (err) throw err
+    console.log("user-info - Saved!")
+  })
+  fs.appendFile('user-info.txt', arg, function(err) {
+    if (err) throw err
+  })
+  fs.appendFile('user-info.txt', arg2, function(err) {
+    if (err) throw err
+  })
 })
 
 // *********Ipc's end********* //
