@@ -7,7 +7,20 @@ const assetsDir = path.join(__dirname, 'assets')
 
 let tray = null
 let window = null
-const ipAddress = "192.168.87.197"
+let base64Icon = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw
+7AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkZCg87wZW7ewA
+AAp1JREFUOMuV1U2IVlUcx/HPnbc0MWwEF40hRWRQmWhEUi4KorlTQ0zQKgqSxKinRYuWrdq0iIp8DAy
+CFmYUUVTYY0Qw0SsYVDQRlFlQU4o4VDMUY9NzWtz/45znzo3yv7n/l3O+53fOPS+F/7R9G0l34Vlap/x
+PG+gPby76471jpJdxI4p/x5QrakPVZ3yI4lLSLH4LpetIT5N24AWKpZXAW4boXogFnGxQXEzhdQYHl0v
+pbtJkBIOkBqXpVhzAWIPi8hocxCyH5qp0e10oHY6BNy3P7szULyc9hzkGTjat8WPRqctkD3QORrJ211J
+srPV7CKP4i7S6CXxF+GtY2lG5D5yg+D6bckHaRXs463dV+OtJVzeBj4Q/inuy2uf4NYPvyVR38Vn4GzD
+ZAC5ezHbITsqtEU8HvGcjpFblDncpDma16yhvqit+c3mLuQj3Vm7rJ4r3kW+z+6sD80aKQWcivwm318B
+pHk9mA11PuSXil/B1thyrSA9HMI8nMtYNlDszcKdbHVcLkduCO0L1VxTv1VTv5plR3lrCuzga+c2YqB2
+QNEfqjV7EWl8c8X78kKleTTfWeuA49maDjlNuz8CHFykOYDEabKvg0Jqh+AB/Z4D7qs+h03gbxyK/FVf
+WL6FfsC/8tdGoZ0/hRKZ6A+2pUP1jdZecse01cGcBr2YNzqdcG6q/oDgS+7e3XLeF6j/wTvzM6Lfi2nQ
+KP8e0P6Ezn9X2488MvLnW75vwP2wCr8J5eD4upsxaHZzOwNNZcU2c3FfwWg1cDuISfIxH6fzedE8G90s
+8nuXH8B0eoXNc/6tQjsQfXaQz0/BEXUD3W4oF0hQPflTlJwZIl+FcOp86e2vvoj1Le6I/P974ZA2dBXk
+97qQ13Z8+3PS0+AdjKa1R95YOZgAAAABJRU5ErkJggg==`
 
 const TRAY_ARROW_HEIGHT = 50;
 const WINDOW_WIDTH = 500;
@@ -30,6 +43,7 @@ app.on('ready', () => {
     toggleWindow()
   })
 
+  // ******** Window ********//
   // Defining the new browser window with parameters
   window = new BrowserWindow({
     width: WINDOW_WIDTH,
@@ -39,9 +53,36 @@ app.on('ready', () => {
     resizable: false,
     movable: false,
   })
+  // ********* ********* //
 
   // Sets the text that's showed when mouse is hovered over the tray icon
   tray.setToolTip('Toggle OctoDesk')
+
+  //******** Menu ********//
+  var menu = Menu.buildFromTemplate([
+    {
+      label: 'Menu',
+      submenu: [
+        {
+          label: 'Toggle dev tools',
+          click() {
+            window.webContents.openDevTools()
+          }
+        },
+        {
+          label: 'Quit',
+          click() {
+            app.quit()
+          }
+        },
+      ]
+    }
+  ])
+
+
+  tray.setContextMenu(menu)
+
+  // ******** ******** //
 
 })
 
@@ -52,8 +93,18 @@ function toggleWindow() {
   }
   else {
     // Check if API file exists.
-    if (fs.existsSync(path.join(__dirname, 'user-info.txt'))) {
-      createWindow()
+    if (fs.existsSync(path.join(__dirname, 'user-info.json'))) {
+      // Read JSON file to get API Key and IP Address
+      fs.readFile('user-info.json', 'utf8', function readFileCallBack(err, data) {
+        if (err) {
+          console.log(err)
+        } else {
+          var obj_data = JSON.parse(data)
+          var ipAddress = obj_data["IPAddress"]
+          var apiKey = obj_data["APIKey"]
+        }
+      })
+      createWindow(ipAddress, apiKey)
       showAppWindow()
     }
     // If not. Open register Window
@@ -91,7 +142,7 @@ function createWindow() {
    }
 }
 
-function showAppWindow() {
+function showAppWindow(ip, api) {
   // Load the webcam url from OctoPrint
   window.loadURL('http://' + ipAddress + '/webcam/?action=stream')
 }
@@ -103,32 +154,18 @@ function showRegisterWindow() {
 
 // **********Ipc's********* //
 
-ipcMain.on('submit-api-file', function(event, arg, arg2) {
-  fs.open('user-info.txt', 'w', function(err, file){
-    if (err) throw err
-    console.log("user-info - Saved!")
-  })
-  fs.appendFile('user-info.txt', arg, function(err) {
-    if (err) throw err
-  })
-  fs.appendFile('user-info.txt', arg2, function(err) {
-    if (err) throw err
-  })
+ipcMain.on('submit-api-file', function(event, arg) {
+  let apiKey = arg
 })
 
-// *********Ipc's end********* //
+ipcMain.on('submit-ip-address', function(event, arg) {
+  let ipAddress = arg
+})
 
-let base64Icon = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw
-7AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkZCg87wZW7ewA
-AAp1JREFUOMuV1U2IVlUcx/HPnbc0MWwEF40hRWRQmWhEUi4KorlTQ0zQKgqSxKinRYuWrdq0iIp8DAy
-CFmYUUVTYY0Qw0SsYVDQRlFlQU4o4VDMUY9NzWtz/45znzo3yv7n/l3O+53fOPS+F/7R9G0l34Vlap/x
-PG+gPby76471jpJdxI4p/x5QrakPVZ3yI4lLSLH4LpetIT5N24AWKpZXAW4boXogFnGxQXEzhdQYHl0v
-pbtJkBIOkBqXpVhzAWIPi8hocxCyH5qp0e10oHY6BNy3P7szULyc9hzkGTjat8WPRqctkD3QORrJ211J
-srPV7CKP4i7S6CXxF+GtY2lG5D5yg+D6bckHaRXs463dV+OtJVzeBj4Q/inuy2uf4NYPvyVR38Vn4GzD
-ZAC5ezHbITsqtEU8HvGcjpFblDncpDma16yhvqit+c3mLuQj3Vm7rJ4r3kW+z+6sD80aKQWcivwm318B
-pHk9mA11PuSXil/B1thyrSA9HMI8nMtYNlDszcKdbHVcLkduCO0L1VxTv1VTv5plR3lrCuzga+c2YqB2
-QNEfqjV7EWl8c8X78kKleTTfWeuA49maDjlNuz8CHFykOYDEabKvg0Jqh+AB/Z4D7qs+h03gbxyK/FVf
-WL6FfsC/8tdGoZ0/hRKZ6A+2pUP1jdZecse01cGcBr2YNzqdcG6q/oDgS+7e3XLeF6j/wTvzM6Lfi2nQ
-KP8e0P6Ezn9X2488MvLnW75vwP2wCr8J5eD4upsxaHZzOwNNZcU2c3FfwWg1cDuISfIxH6fzedE8G90s
-8nuXH8B0eoXNc/6tQjsQfXaQz0/BEXUD3W4oF0hQPflTlJwZIl+FcOp86e2vvoj1Le6I/P974ZA2dBXk
-97qQ13Z8+3PS0+AdjKa1R95YOZgAAAABJRU5ErkJggg==`
+// ********* ********* //
+
+// Create JSON with user info
+let userInfo = {APIKey: apiKey, IPAddress: ipAddress}
+let userInfoJSON = JSON.stringify(userInfo)
+
+fs.writeFile('user-info.json', userInfoJSON, 'utf8', callback)
