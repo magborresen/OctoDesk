@@ -79,8 +79,9 @@ app.on('ready', () => {
     }
   ])
 
-
+  if (process.platform !== 'darwin'){
   tray.setContextMenu(menu)
+  }
 
   // ******** ******** //
 
@@ -154,18 +155,4 @@ function showRegisterWindow() {
 
 // **********Ipc's********* //
 
-ipcMain.on('submit-api-file', function(event, arg) {
-  let apiKey = arg
-})
-
-ipcMain.on('submit-ip-address', function(event, arg) {
-  let ipAddress = arg
-})
-
 // ********* ********* //
-
-// Create JSON with user info
-let userInfo = {APIKey: apiKey, IPAddress: ipAddress}
-let userInfoJSON = JSON.stringify(userInfo)
-
-fs.writeFile('user-info.json', userInfoJSON, 'utf8', callback)
