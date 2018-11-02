@@ -1,5 +1,5 @@
 const electron = require('electron')
-const {app, BrowserWindow, ipcMain, Tray, nativeImage, Menu} = require('electron')
+const {app, BrowserWindow, ipcMain, Tray, nativeImage, Menu, remote} = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -55,6 +55,8 @@ app.on('ready', () => {
   })
   // ********* ********* //
 
+  window.webContents.openDevTools()
+
   // Sets the text that's showed when mouse is hovered over the tray icon
   tray.setToolTip('Toggle OctoDesk')
 
@@ -89,6 +91,8 @@ app.on('ready', () => {
 
 // Hides the window if visible and vice versa
 function toggleWindow() {
+  var ipAddress
+  var apiKey
   if (window.isVisible()) {
     window.hide()
   }
@@ -96,17 +100,17 @@ function toggleWindow() {
     // Check if API file exists.
     if (fs.existsSync(path.join(__dirname, 'user-info.json'))) {
       // Read JSON file to get API Key and IP Address
-      fs.readFile('user-info.json', 'utf8', function readFileCallBack(err, data) {
+      fs.readFile('user-info.json', 'utf8', function readFileCallback(err, data) {
         if (err) {
           console.log(err)
         } else {
           var obj_data = JSON.parse(data)
-          var ipAddress = obj_data["IPAddress"]
-          var apiKey = obj_data["APIKey"]
+          ipAddress = obj_data["IPAddress"]
+          apiKey = obj_data["APIKey"]
+          createWindow()
+          showAppWindow(ipAddress, apiKey)
         }
       })
-      createWindow(ipAddress, apiKey)
-      showAppWindow()
     }
     // If not. Open register Window
     else {
@@ -145,12 +149,20 @@ function createWindow() {
 
 function showAppWindow(ip, api) {
   // Load the webcam url from OctoPrint
-  window.loadURL('http://' + ipAddress + '/webcam/?action=stream')
+  window.loadURL(`file://${path.join(__dirname, 'assets/html/index.html')}`)
+
+  // Use ipc to send the IP Address and API key to index.js
+  ipcMain.on('ready-notification', (event, arg) => {
+    event.sender.send('ip-notification', ip)
+  })
+  ipcMain.on('ready-notification', (event, arg) => {
+    event.sender.send('api-notification', api)
+  })
 }
 
 function showRegisterWindow() {
   // Load the register template
-  window.loadURL(path.join(__dirname, 'assets/html/register.html'))
+  window.loadURL(`file://${path.join(__dirname, 'assets/html/register.html')}`)
 }
 
 // **********Ipc's********* //
