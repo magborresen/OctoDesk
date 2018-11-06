@@ -6,13 +6,15 @@ body {
   position: relative;
 }
 
+
 .text-block {
   position: absolute;
-  bottom: 20px;
-  left: 20px;
+  bottom: 10px;
+  left: 10px;
   background-color: black;
   color: white;
   padding-left: 20px;
   padding-right: 20px;
   font-size: 10px;
+  opacity: 50%;
 }
