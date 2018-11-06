@@ -2,6 +2,7 @@ const electron = require('electron')
 const ipc = electron.ipcRenderer
 const fs = require('fs')
 const path = require('path')
+const remote = electron.remote
 
 var ipAddress
 var apiKey
@@ -50,19 +51,18 @@ function callAPI(ipAddress, key) {
   request.onload = function() {
     // Parse JSON data
     var data = JSON.parse(this.response)
-    console.log(data)
     progress = document.getElementById('progress')
     timeLeft = document.getElementById('time-left')
 
-    if (data['progress']['completion'] !== null) {
-    progress.textContent += data['progress']['completion'].toLocaleString('en')
-    timeLeft.textContent += data['job']['estimatedPrintTime'].toLocaleString('en')
-  } else {
-    progress.textContent += 'No ongoing job'
-    timeLeft.textContent += 'No ongoing job'
-  }
+    if (data['progress']['completion'] !== null && progress.textContent === 'Progress:') {
+      progress.textContent += data['progress']['completion'].toLocaleString('en')
+      timeLeft.textContent += data['job']['estimatedPrintTime'].toLocaleString('en')
+    } else {
+      progress.textContent = "Progress: No Ongoing Job"
+      timeLeft.textContent = "Print Time Left: No Ongoing Job"
+    }
 
-}
+  }
 
   request.send()
 }
