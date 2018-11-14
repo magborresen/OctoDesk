@@ -9,8 +9,8 @@ body {
 
 .text-block {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  bottom: 20px;
+  left: 20px;
   background-color: black;
   color: white;
   padding-left: 20px;
