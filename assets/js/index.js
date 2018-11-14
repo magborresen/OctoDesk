@@ -23,7 +23,7 @@ ipc.on('api-notification', (event, arg) => {
   console.log(arg)
   apiKey = arg
   startStream()
-  callAPI(ipAddress, apiKey)
+  var updateInterval = setInterval(callAPI, 500, ipAddress, apiKey)
 })
 
 
