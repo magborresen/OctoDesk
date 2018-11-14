@@ -6,9 +6,20 @@ body {
   position: relative;
 }
 
+#progress {
+  display: inline-block;
+  float: left;
+}
+
+#time-left {
+  display: inline-block;
+  float: left;
+}
+
 
 .text-block {
   position: absolute;
+  clear: both;
   bottom: 10px;
   left: 10px;
   background-color: black;
