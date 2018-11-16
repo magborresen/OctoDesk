@@ -58,8 +58,8 @@ function callAPI(ipAddress, key) {
       progress.textContent += data['progress']['completion'].toLocaleString('en')
       timeLeft.textContent += data['job']['estimatedPrintTime'].toLocaleString('en')
     } else {
-      progress.textContent = "Progress: No Ongoing Job"
-      timeLeft.textContent = "Print Time Left: No Ongoing Job"
+      progress.textContent = "Progress: No Ongoing Job "
+      timeLeft.textContent = "Print Time Left: No Ongoing Job "
     }
 
   }

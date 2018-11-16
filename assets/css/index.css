@@ -6,6 +6,15 @@ body {
   position: relative;
 }
 
+p {
+  padding: 5px;
+}
+
+#ledbtn {
+  display: block;
+  margin: 0 auto;
+}
+
 #progress {
   display: inline-block;
   float: left;
@@ -14,6 +23,10 @@ body {
 #time-left {
   display: inline-block;
   float: left;
+}
+
+#video {
+  width: 100%;
 }
 
 
