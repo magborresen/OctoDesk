@@ -3,6 +3,8 @@ from gpiozero.pins.pidpio import PigPIOFactory
 import json
 
 file_loc = "../../user-info.json"
+factory = PigPIOFactory(host=ip)
+led = LED(17, pin_factory=factory)
 
 
 def get_data(json_file):
@@ -12,8 +14,12 @@ def get_data(json_file):
     return ip
 
 
-def led_turn_on(ip):
+def toggle_led(ip):
 
-    factory = PigPIOFactory(host=ip)
-    led = LED(17, pin_factory=factory)
-    
+    if led.is_lit():
+        led.off()
+    else:
+        led.on()
+
+
+toggle_led(get_data(file_loc))
