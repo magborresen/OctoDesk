@@ -21,5 +21,4 @@ submitBtn.addEventListener('click', function (err){
     if (err) throw err;
       console.log('File Saved')
     })
-    remote.getCurrentWindow().reload()
   })
