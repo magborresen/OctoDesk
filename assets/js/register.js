@@ -5,7 +5,6 @@ const fs = require('fs')
 
 const submitBtn = document.getElementById('apiSubmit')
 
-
 submitBtn.addEventListener('click', function (err){
 
   let apiKey = document.getElementById('apiInput').value
